@@ -1,7 +1,6 @@
 To compile, use 
   g++ TestSplayTree.cpp SplayTree.h
 
-
-Note that the splay( ) function does a top-down splay instead of a bottom-up splay as we discussed in class.
+We discussed the bottom-up splay approach in class. However, the splay( ) function implements a top-down splay, which gives to a slightly different splay tree. 
 
 
