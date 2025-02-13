@@ -214,6 +214,23 @@ class SplayTree
         root = newTree;
     }
 
+    void preOrderTraversal() const
+    {
+        if (isEmpty())
+            cout << "Empty tree" << endl;
+        else
+            preOrderTraversal(root);
+    }
+
+    void postOrderTraversal() const
+    {
+        if (isEmpty())
+            cout << "Empty tree" << endl;
+        else
+            postOrderTraversal(root);
+    }
+
+
 private:
     struct BinaryNode
     {
@@ -336,6 +353,26 @@ private:
         rightTreeMin->left = t->right;
         t->left = header.right;
         t->right = header.left;
+    }
+
+    void preOrderTraversal(BinaryNode *t) const
+    {
+        if (t != t->left)
+        {
+            cout << t->element << " ";
+            preOrderTraversal(t->left);
+            preOrderTraversal(t->right);
+        }
+    }
+
+    void postOrderTraversal(BinaryNode *t) const
+    {
+        if (t != t->left)
+        {
+            postOrderTraversal(t->left);
+            postOrderTraversal(t->right);
+            cout << t->element << " ";
+        }
     }
 };
 
