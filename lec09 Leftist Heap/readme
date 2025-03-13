@@ -1,1 +1,1 @@
-test
+To compile:  g++ TestLeftistHeap.cpp LeftistHeap.h
