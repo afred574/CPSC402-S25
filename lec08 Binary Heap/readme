@@ -1,1 +1,5 @@
-test
+Test-STL.cpp uses the binary heap from standard template class
+To compile:  g++ Test-STL.cpp
+
+TestBinaryHeap.cpp uses the heap defined in BinaryHeap.h
+To compile:  g++ TestBinaryHeap.cpp BinaryHeap.h
