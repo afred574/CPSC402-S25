@@ -1,114 +1,74 @@
 #include <iostream>
-#include <list>
 #include <vector>
-#include <limits.h>
+#include <queue>
 #include <fstream>
+#include <limits>
 
-using namespace std;
-
-#define INF INT_MAX
-
-
-struct Vertex {
-    list<pair<int, int>> adj;
-    bool known;
-    int dist;
-    Vertex* path;
+struct Edge {
+    int to;
+    int weight;
 };
 
-class Graph {
-public:
-    Graph(int numVertices) : numVertices(numVertices), vertices(numVertices) {}
+using Graph = std::vector<std::vector<Edge>>;
 
-    void addEdge(int u, int v, int w) {
-        vertices[u].adj.push_back(make_pair(v, w));
-    }
+void dijkstra(const Graph& graph, int source, std::vector<int>& dist) {
+    int n = graph.size();
+    dist.assign(n, std::numeric_limits<int>::max());
+    dist[source] = 0;
 
-void dijkstra(int source) {
-    // Initialize all vertices as unknown and with infinite distance from source
-    for (int i = 0; i < numVertices; i++) {
-        vertices[i].known = false;
-        vertices[i].dist = INF;
-        vertices[i].path = nullptr;
-    }
+    using Pair = std::pair<int, int>; // (distance, node)
+    std::priority_queue<Pair, std::vector<Pair>, std::greater<>> pq;
+    pq.emplace(0, source);
 
-    // The distance from the source vertex to itself is 0
-    vertices[source].dist = 0;
+    while (!pq.empty()) {
+        auto [currentDist, u] = pq.top();
+        pq.pop();
 
+        if (currentDist > dist[u]) continue; // Skip if already found a shorter path
 
-    
-    for (int i = 0; i < numVertices; i++) {
-        // Find the closest unknown vertex
-        int minDist = INF;
-	Vertex* closestVertex = nullptr;
-	
-        for (int j = 0; j < numVertices; j++) {
-            if (!vertices[j].known && vertices[j].dist < minDist) {
-                minDist = vertices[j].dist;
-                closestVertex = &vertices[j];
-            }
-        }
-
-        // If all vertices are known, break out of the loop
-        if (closestVertex == nullptr) {
-            break;
-        }
-
-        // Mark the closest vertex as known
-        closestVertex->known = true;
-
-        // Update the distance to each adjacent vertex
-        for (auto& neighbor : closestVertex->adj) {
-            int v = neighbor.first;
-            int w = neighbor.second;
-            if (!vertices[v].known && closestVertex->dist + w < vertices[v].dist) {
-                vertices[v].dist = closestVertex->dist + w;
-                vertices[v].path = closestVertex;
+        for (const Edge& e : graph[u]) {
+            int v = e.to;
+            int weight = e.weight;
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                pq.emplace(dist[v], v);
             }
         }
     }
 }
 
-  
-    void printShortestPaths(int source) {
-        for (int i = 0; i < numVertices; i++) {
-            cout << "Shortest path from vertex " << source << " to vertex " << i << ": ";
-            if (vertices[i].dist == INF) {
-                cout << "no path exists" << endl;
-            } else {
-                cout << vertices[i].dist << endl;
-            }
-        }
-    }
-
-private:
-    int numVertices;
-    vector<Vertex> vertices;
-};
-
-
-
 int main() {
-    ifstream input("graph.dat");
-    if (!input) {
-        cerr << "Failed to open file" << endl;
+    std::ifstream infile("graph.dat");
+    if (!infile) {
+        std::cerr << "Error opening input file.\n";
         return 1;
     }
 
-    int numVertices, numEdges;
-    input >> numVertices >> numEdges;
+    int V, E;
+    infile >> V >> E;
 
-    Graph g(numVertices);
-
-    int u, v, w;
-    for (int i = 0; i < numEdges; i++) {
-        input >> u >> v >> w;
-        g.addEdge(u, v, w);
+    Graph graph(V);
+    for (int i = 0; i < E; ++i) {
+        int u, v, w;
+        infile >> u >> v >> w;
+        --u; --v;  // Adjust from 1-based to 0-based indexing
+        graph[u].push_back({v, w});
+        // Uncomment the next line if the graph is undirected:
+        // graph[v].push_back({u, w});
     }
 
-    g.dijkstra(1);
-    g.printShortestPaths(1);
+    int source = 0; // Node 1 in the original graph
+    std::vector<int> distances;
+    dijkstra(graph, source, distances);
+
+    std::cout << "Shortest distances from node " << (source + 1) << ":\n";
+    for (int i = 0; i < distances.size(); ++i) {
+        std::cout << "To " << (i + 1) << ": ";
+        if (distances[i] == std::numeric_limits<int>::max())
+            std::cout << "INF\n";
+        else
+            std::cout << distances[i] << "\n";
+    }
 
     return 0;
 }
-
