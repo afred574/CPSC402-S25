@@ -1,58 +1,35 @@
-#include "BinomialQueue.h"
 #include <iostream>
-using namespace std;
+#include "BinomialQueue.h"
 
-int main( )
-{
-    int numItems = 101;
-    BinomialQueue<int> h1;
-    BinomialQueue<int> h2;
-   
-    int i = 37;
-    int count = 0;
+int main() {
+    try {
+        BinomialQueue<int> bq;
 
-    cout << "Generating 100 numbers in random order" << endl;
-    cout << "Insert even numbers into h1 and odd numbers into h2" << endl;
-    
-    //generating 1-100 in random order
-    for( i = 37; i != 0; i = ( i + 37 ) % numItems )
-    {
-        //print the values, ten on each line
-        cout << i << " ";
-        count ++;
-        if (count % 10 == 0) 
-            cout << endl;
+        int inputSequence[] = {7, 5, 10, 12, 3, 11, 13, 2};
+        int n = sizeof(inputSequence) / sizeof(inputSequence[0]);
 
+        std::cout << "=== Inserting elements into Binomial Queue ===\n";
 
-        // if even, insert into h1
-        if( i % 2 == 0 )
-            h1.insert( i );
+        for (int i = 0; i < n; ++i) {
+            std::cout << "Inserting: " << inputSequence[i] << std::endl;
+            bq.insert(inputSequence[i]);
 
-        // if odd, insert into h2
-        else
-            h2.insert( i );
+            std::cout << "Current Min: " << bq.findMin() << std::endl;
+
+            bq.printTrees();
+            std::cout << "============================\n";
+        }
+
+        std::cout << "\n=== Deleting all elements in order ===\n";
+        while (!bq.isEmpty()) {
+            int minVal;
+            bq.deleteMin(minVal);
+            std::cout << "Deleted Min: " << minVal << std::endl;
+        }
+
+    } catch (const UnderflowException& e) {
+        std::cerr << "Error: Queue is empty.\n";
     }
-    
-    cout << "Now merge h1 into h2" << endl;
-    h2.merge( h1 );
-    //h2 = h;
-
-    cout << "Perform 100 deleteMin on h2" << endl;
-    count = 0;
-    for( i = 1; i < numItems; ++i )
-    {
-        int x;
-        h2.deleteMin( x );
-
-        //print the values, ten on each line
-        cout << i << " ";
-        count ++;
-        if (count % 10 == 0) 
-            cout << endl;
-    }
-
-    if( h1.isEmpty( ) && h2.isEmpty() )
-        cout << "Now both h1 and h2 are empty" << endl;
 
     return 0;
 }
